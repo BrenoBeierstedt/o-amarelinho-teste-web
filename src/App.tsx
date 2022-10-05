@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { JobList } from "./components/JobsList";
-import "./styles/main.css"
 import { MagnifyingGlass } from "phosphor-react";
-import {NotFoundBanner} from "./components/NotFoundBanner";
+import { JobList } from "./components/JobsList";
+import {NoData} from "./components/NoData";
+import "./styles/main.css"
 
 interface Job{
     id: number
@@ -22,7 +22,7 @@ function App() {
     const [searchTrigger, setSearchTrigger] = useState(false)
 
     useEffect(() => {
-        fetch("http://192.168.0.15:38643/api/jobs")
+        fetch(`${import.meta.env.VITE_API_URI}/api/jobs`)
             .then( res => res.json() )
             .then(data => {
                 setJob(data)
@@ -48,6 +48,30 @@ function App() {
             setCitySearch(e.target.value)
         }
     }
+    const noData = <NoData/>
+    const jobList = job.filter((val)=> {
+        if (!searchTrigger){
+            if( citySearch == "" && titleSearch == ""  ) {
+                return val
+            }else return val
+        }  if (searchTrigger && val.title.toLowerCase().includes(titleSearch.toLowerCase()) && val.cityName.toLowerCase().includes(citySearch.toLowerCase())) {
+            return val
+        }
+    }).map((job) => {
+        return(
+            <JobList
+                title={job.title}
+                id={job.id}
+                key={job.id}
+                description={job.description}
+                companyName={job.companyName}
+                cityName={job.cityName}
+                stateName={job.stateName}
+                updatedAt={job.updatedAt}
+                createdAt={job.createdAt}
+            />
+        )
+    })
 
     return(
         <>
@@ -80,32 +104,9 @@ function App() {
                     </div>
                 </div>
             </div>
-            <div className="w-full">
-                {job.filter((val)=> {
-                    if (!searchTrigger){
-                        if( citySearch == "" && titleSearch == ""  ) {
-                            return val
-                        }else return val
-                    }  if (searchTrigger && val.title.toLowerCase().includes(titleSearch.toLowerCase()) && val.cityName.toLowerCase().includes(citySearch.toLowerCase())) {
-                        return val
-                    }
-                }).map((job) => {
-                    return(
-                        !job ?
-                         <NotFoundBanner/> : <JobList
-                                title={job.title}
-                                id={job.id}
-                                key={job.id}
-                                description={job.description}
-                                companyName={job.companyName}
-                                cityName={job.cityName}
-                                stateName={job.stateName}
-                                updatedAt={job.updatedAt}
-                                createdAt={job.createdAt}
-                            />
-                    )
-                })}
-            </div>
+
+
+                {jobList.length < 1 ? noData : jobList }
         </>
     )
 }
