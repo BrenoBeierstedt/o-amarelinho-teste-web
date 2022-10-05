@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { MagnifyingGlass } from "phosphor-react";
 import { JobList } from "./components/JobsList";
 import {NoData} from "./components/NoData";
+import config from "./config.json"
 import "./styles/main.css"
 
 interface Job{
@@ -22,7 +23,7 @@ function App() {
     const [searchTrigger, setSearchTrigger] = useState(false)
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_URI}/api/jobs`)
+        fetch(`/api/api/jobs`)
             .then( res => res.json() )
             .then(data => {
                 setJob(data)
