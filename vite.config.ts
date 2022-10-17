@@ -9,7 +9,7 @@ export default ({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: 'http://api:4000',
+            target: 'https://amarelinho-api.onrender.com/',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
